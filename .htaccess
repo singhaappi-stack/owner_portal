@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP_USER_AGENT} (Baiduspider|AhrefsBot|YandexBot|SeznamBot|sitebot|MegaIndex|HTTrack|SemrushBot) [NC]
+    RewriteRule ^(.*)$ 404 [L]
+    ErrorDocument 404 /templates/error/404.html
+</IfModule>
+
+RewriteEngine on
+
+# api
+RewriteRule ^js/(.*\.js)$ template/js/$1 [L]
+RewriteRule ^api/([^/]+)/([^/]+)/?$ api.php?mode=$1&submode=$2 [L,QSA]
+RewriteRule ^api/([^/]+)/?$ api.php?mode=$1 [L,QSA]
+RewriteRule ^([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/?$ template/template.php?folder=$1&template=$2 [L,QSA]
+RewriteRule ^([a-zA-Z0-9_-]+)/?$ template/template.php?template=$1 [L,QSA]
+RewriteRule ^/?$ template/template.php?template=dashboard [L,QSA]
+

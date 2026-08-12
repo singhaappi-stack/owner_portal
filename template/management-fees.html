@@ -1,0 +1,230 @@
+<div class="mx-auto max-w-[1280px] px-4 md:px-6 py-8">
+    <!-- Header Title Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">支払い管理</h1>
+            <p class="text-sm text-gray-500 mt-1">請求内訳と支払い状況を確認できます</p>
+        </div>
+        <div>
+        </div>
+    </div>
+
+    <!-- Cards Summary Grid -->
+    <div class="grid grid-cols-2 gap-6 mb-8">
+        <!-- Unpaid Summary Card -->
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">未払い合計</h2>
+            <div class="text-3xl font-bold text-red-600 mb-4" id="unpaid-total">¥0</div>
+        </div>
+        <!-- Latest 5 payment records -->
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col justify-between">
+            <div>
+                <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">直近の支払履歴 (最大5件)</h2>
+                <div class="mt-4 space-y-3" id="payment-records-container">
+                    <!-- Dynamic payment records will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accordion Billing Details List -->
+    <div class="space-y-4" id="billing-accordion-container">
+        <h3 class="text-lg font-bold text-gray-900 mb-4">請求一覧</h3>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(async function () {
+        init();
+        listener();
+    });
+
+    const init = () => {
+        fetchManagementFee()
+    }
+
+    const fetchManagementFee = () => {
+        $.ajax({
+            url: 'api/owner/getManagementFeeSummary',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                if (response._code == '200') {
+                    fetchFee(response.fee_list, response.payment_list, response.unpaid)
+                } else {
+                    popupBox('error', "エラー: " + response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                popupBox('error', "エラーが発生しました: " + xhr.status + " " + error);
+            }
+        });
+    }
+
+    const fetchFee = (fee_list, payment_list, unpaid_amount = 0) => {
+        $("#unpaid-total").html(formatMoney(unpaid_amount));
+
+        // Render latest 5 payments
+        let allPayments = [];
+        if (payment_list && typeof payment_list === 'object') {
+            Object.keys(payment_list).forEach(month => {
+                const payments = payment_list[month];
+                if (Array.isArray(payments)) {
+                    payments.forEach(p => {
+                        allPayments.push(p);
+                    });
+                }
+            });
+        }
+
+        // Sort by payment_date descending
+        allPayments.sort((a, b) => {
+            const dateA = a.payment_date || "";
+            const dateB = b.payment_date || "";
+            return dateB.localeCompare(dateA);
+        });
+
+        // Take top 5
+        const latestPayments = allPayments.slice(0, 5);
+
+        const $paymentContainer = $("#payment-records-container");
+        $paymentContainer.empty();
+
+        if (latestPayments.length === 0) {
+            $paymentContainer.html('<div class="text-sm text-gray-400 text-center py-4">支払い履歴はありません</div>');
+        } else {
+            latestPayments.forEach(p => {
+                const amount = parseFloat(p.amount || 0);
+                const rawDate = p.payment_date || "";
+                const displayDate = rawDate.split(" ")[0] || rawDate;
+                
+                const recordHtml = `
+                    <div class="flex items-center justify-between text-sm pb-2 border-b border-gray-100 last:border-b-0 last:pb-0">
+                        <div class="flex items-center gap-2">
+                            <span class="material-icons text-green-500 text-[18px]">check_circle</span>
+                            <span class="text-gray-600 font-mono">${displayDate}</span>
+                        </div>
+                        <span class="text-green-600 font-bold">¥${amount.toLocaleString()}</span>
+                    </div>
+                `;
+                $paymentContainer.append(recordHtml);
+            });
+        }
+
+        const $container = $("#billing-accordion-container");
+        $container.find(".border.rounded-xl").remove();
+
+        const sortedMonths = Object.keys(fee_list).sort().reverse();
+
+        sortedMonths.forEach(month => {
+            const items = fee_list[month];
+
+            let monthFeeTotal = 0;
+            let monthMgtTotal = 0;
+            let monthSrvTotal = 0;
+            let monthRepTotal = 0;
+
+            items.forEach(item => {
+                const amount = parseFloat(item.amount || 0);
+                monthFeeTotal += amount;
+            });
+
+            let rowsHtml = "";
+            items.forEach(item => {
+                const amount = parseFloat(item.amount || 0);
+                const desc = item.description || "";
+                const cat = item.category || "";
+
+                let catName = cat || "サービス費用";
+                let catBadgeClass = "text-orange-700 bg-orange-50";
+                const refId = item.ref_number || `FEE-${String(item.id).padStart(3, '0')}`;
+
+                rowsHtml += `
+                    <tr>
+                        <td class="py-3 font-mono text-gray-500 text-xs">${refId}</td>
+                        <td class="py-3">${desc}</td>
+                        <td class="py-3">
+                            <span class="inline-flex px-2 py-0.5 rounded text-xs font-medium ${catBadgeClass}">${catName}</span>
+                        </td>
+                        <td class="py-3 text-right font-medium">¥${amount.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+
+            const accordionItemHtml = `
+                <div class="border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
+                    <!-- Accordion Header -->
+                    <div data-accordion-header
+                        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 hover:bg-gray-50 transition-colors cursor-pointer select-none">
+                        <div class="flex items-start gap-3">
+                            <span class="material-icons text-gray-400 bg-gray-50 p-2 rounded-lg mt-0.5">receipt</span>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-bold text-gray-900">${month.slice(0, 4)}年${month.slice(5)}月分</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between sm:justify-end gap-6">
+                            <div class="text-right">
+                                <div class="font-bold text-gray-900 text-lg">¥${monthFeeTotal.toLocaleString()}</div>
+                                <div class="text-xs text-gray-400">${items.length} 件の請求</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Accordion Body -->
+                    <div data-accordion-body class="border-t border-gray-100 p-5 bg-gray-50/50 hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm text-left text-gray-700">
+                                <thead>
+                                    <tr class="text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-200">
+                                        <th class="py-2.5">参照ID</th>
+                                        <th class="py-2.5">内容</th>
+                                        <th class="py-2.5 px-2">区分</th>
+                                        <th class="py-2.5 text-right">金額</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    ${rowsHtml}
+                                </tbody>
+                                <tfoot>
+                                    <tr class="font-bold text-gray-900 border-t border-gray-200">
+                                        <td colspan="3" class="py-4">合計</td>
+                                        <td class="py-4 text-right">¥${monthFeeTotal.toLocaleString()}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            $container.append(accordionItemHtml);
+        });
+    }
+
+    const listener = () => {
+        $(document).on("click", "[data-accordion-header]", function () {
+            var $body = $(this).next('[data-accordion-body]');
+            var $icon = $(this).find('[data-accordion-icon]');
+            var $iconContainer = $(this).find('.material-icons').first();
+
+            if ($body.hasClass('hidden')) {
+                $body.removeClass('hidden');
+                $icon.text('expand_less');
+                if ($(this).find('.bg-red-50').length) {
+                    // Keep red for unpaid
+                } else {
+                    $iconContainer.addClass('text-blue-500 bg-blue-50').removeClass('text-gray-400 bg-gray-50');
+                }
+            } else {
+                $body.addClass('hidden');
+                $icon.text('expand_more');
+                if ($(this).find('.bg-red-50').length) {
+                    // Keep red for unpaid
+                } else {
+                    $iconContainer.removeClass('text-blue-500 bg-blue-50').addClass('text-gray-400 bg-gray-50');
+                }
+            }
+        })
+    }
+</script>

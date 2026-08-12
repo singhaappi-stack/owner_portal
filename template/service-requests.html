@@ -1,0 +1,368 @@
+<div class="mx-auto max-w-[1280px] px-4 md:px-6 py-8">
+    <!-- Header Title Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">サービス依頼</h1>
+            <p class="text-sm text-gray-500 mt-1">サービスの依頼や備品の購入申請ができます</p>
+        </div>
+        <div>
+            <button id="open-modal-btn"
+                class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer">
+                <span class="material-icons text-[18px]">add</span>
+                <span>新規依頼</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Status Cards Filter Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- 申請中 Card -->
+        <div data-filter="申請中"
+            class="filter-card bg-amber-50/50 border border-amber-100 hover:border-amber-200 rounded-xl p-5 shadow-sm transition-all flex items-center justify-between select-none hover:shadow">
+            <div>
+                <span class="text-xs font-semibold text-amber-800 uppercase tracking-wider">申請中</span>
+                <div class="text-3xl font-bold text-amber-600 mt-1" id="count-request">0</div>
+            </div>
+            <span class="material-icons text-amber-400 text-[32px]">hourglass_empty</span>
+        </div>
+
+        <!-- 処理中 Card -->
+        <div data-filter="処理中"
+            class="filter-card bg-blue-50/50 border border-blue-100 hover:border-blue-200 rounded-xl p-5 shadow-sm transition-all flex items-center justify-between select-none hover:shadow">
+            <div>
+                <span class="text-xs font-semibold text-blue-800 uppercase tracking-wider">処理中</span>
+                <div class="text-3xl font-bold text-blue-600 mt-1" id="count-process">0</div>
+            </div>
+            <span class="material-icons text-blue-400 text-[32px]">sync</span>
+        </div>
+
+        <!-- 完了 Card -->
+        <div data-filter="完了"
+            class="filter-card bg-green-50/50 border border-green-100 hover:border-green-200 rounded-xl p-5 shadow-sm transition-all flex items-center justify-between select-none hover:shadow">
+            <div>
+                <span class="text-xs font-semibold text-green-800 uppercase tracking-wider">完了</span>
+                <div class="text-3xl font-bold text-green-600 mt-1" id="count-completed">0</div>
+            </div>
+            <span class="material-icons text-green-400 text-[32px]">check_circle_outline</span>
+        </div>
+    </div>
+
+    <!-- Request History List Section -->
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="font-bold text-gray-900">依頼履歴</h3>
+            <span id="active-filter-badge"
+                class="hidden px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"></span>
+        </div>
+        <div class="divide-y divide-gray-150" id="requests-list">
+            
+
+            <!-- Item 4 (Pending) -->
+            <!-- <div class="request-item p-5 flex flex-col md:flex-row justify-between gap-4 hover:bg-gray-50/50 transition-colors"
+                data-status="申請中">
+                <div class="flex items-start gap-4">
+                    <div class="p-2.5 bg-gray-100 rounded-xl text-gray-500 mt-0.5">
+                        <span class="material-icons text-[22px]">bathtub</span>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h4 class="font-bold text-gray-900 text-base">シャンプー・コンディショナー</h4>
+                            <span class="font-mono text-xs text-gray-400">REQ-004</span>
+                            <span
+                                class="inline-flex px-2 py-0.5 rounded text-xs font-medium text-gray-600 bg-gray-100">アメニティ</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1.5">ゲスト用アメニティセット</p>
+                        <p class="text-xs text-gray-400 mt-2">申請日: 2026-06-16</p>
+                    </div>
+                </div>
+                <div
+                    class="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-3 md:text-right min-w-[120px]">
+                    <div class="font-bold text-gray-900 text-lg">¥50,000</div>
+                    <span
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-150">
+                        <span class="material-icons text-[14px]">schedule</span>
+                        <span>申請中</span>
+                    </span>
+                </div>
+            </div> -->
+        </div>
+    </div>
+</div>
+
+<!-- New Request Modal -->
+<div id="new-request-modal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-xs">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 overflow-hidden border border-gray-100">
+        <!-- Modal Header -->
+        <div class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-gray-900">新規サービス依頼</h3>
+            <button id="close-modal-btn"
+                class="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-pointer">
+                <span class="material-icons text-[20px]">close</span>
+            </button>
+        </div>
+        <!-- Modal Form -->
+        <form id="new-request-form" class="grid grid-cols-2 p-6 space-y-4 gap-4">
+
+            <div class="col-span-2">
+                <label for="req-category-select"
+                    class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">区分</label>
+                <select id="req-category-select" required class="block w-full border border-gray-300 rounded-lg p-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                </select>
+
+                <div id="req-description" class="mt-2"></div>
+            </div>
+            <div class="col-span-2">
+                <label for="req-item-select"
+                    class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">品目・サービス名</label>
+                <select id="req-item-select" required
+                    class="block w-full border border-gray-300 rounded-lg p-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                    <!-- Options loaded dynamically via jQuery -->
+                </select>
+
+                <div id="req-description" class="mt-2"></div>
+            </div>
+
+            <div id="quantity-container" class="hidden">
+                <label for="req-quantity" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">数量</label>
+                <input type="number" id="req-quantity" required min="1"
+                    class="block w-full border border-gray-300 rounded-lg p-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                    value="1" placeholder="例: 1">
+            </div>
+
+            <div id="price-container">
+                <label for="req-price" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">概算金額 (円)</label>
+                <div id="req-price" required min="0" class="block w-full rounded-lg p-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"> </div>
+            </div>
+
+
+            <div class="col-span-2">
+                <label for="req-remarks" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">依頼備考</label>
+                <textarea id="req-remarks" rows="3" maxlength="500"
+                    class="block w-full border border-gray-300 rounded-lg p-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                    placeholder="依頼備考を入力してください"></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 col-span-2">
+                <button type="button" id="cancel-btn"
+                    class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer">
+                    キャンセル
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer">
+                    依頼を送信する
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+service_list = null;
+$(document).ready(async function(){
+    init();
+    listener();
+});
+
+const listener = () => {
+    $("#new-request-form").submit(requestService)
+    $("#open-modal-btn").on("click", () => {
+        $("#new-request-form [type='submit']").html("依頼を送信する").removeClass("pointer-events-none opacity-50"); 
+        $("#new-request-modal").removeClass('hidden')
+    });
+    $(document).on("change", "#req-category-select", () => {
+        if ($("#req-category-select").val() == "実物販売"){
+            $("#req-quantity").val(1);
+            $("#quantity-container").removeClass("hidden");
+            $("#req-quantity").removeClass("col-span-2");
+        } else {
+            $("#quantity-container").addClass("hidden");
+            $("#req-quantity").addClass("col-span-2");
+        }
+
+        fetchItem()
+    })
+    $(document).on("change", "#req-item-select", (e) => {updateItem($(e.currentTarget).val())})
+    $(document).on("click", "#close-modal-btn, #cancel-btn", () => {$("#new-request-modal").addClass('hidden')})
+}
+
+const init = () => {
+    getOwnerRequestList();
+    getServiceList();
+}
+
+const getOwnerRequestList = () => {
+    $.ajax({
+        url: 'api/owner/getOwnerRequestList',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response._code == '200') {
+                fetchRequest(response.request_list);
+
+                $("#count-request").html(response.count.request)
+                $("#count-process").html(response.count.process)
+                $("#count-completed").html(response.count.completed)
+            } else {
+                popupBox('error', "エラー: " + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            popupBox('error', "エラーが発生しました: " + xhr.status + " " + error);
+        }
+    });
+}
+
+const getServiceList = () => {
+    $.ajax({
+        url: 'api/owner/getServiceList',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response._code == '200') {
+                service_list = response.service_list
+                fetchServiceList();
+            } else {
+                popupBox('error', "エラー: " + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            popupBox('error', "エラーが発生しました: " + xhr.status + " " + error);
+        }
+    });
+}
+
+const updateItem = (id = null) => {
+    $("#req-description").html("");
+    $obj = service_list[$("#req-category-select").val()].find(
+        obj => obj['id'] == id
+    );
+    $("#req-description").html($obj.description);
+    $("#req-price").html($obj.price ?? "未定 - 事務所までご連絡ください");
+}
+
+const fetchServiceList = () => {
+    $container = $("#req-category-select");
+    $container.find("option").remove();
+    Object.keys(service_list).forEach((category) => {
+        $container.append(`<option value="${category}">${category}</option>`);
+    })
+    fetchItem();
+}
+
+const fetchItem = () => {
+    const category = $("#req-category-select").val();
+    console.log(category);
+    $container = $("#req-item-select");
+    $container.find("option").remove();
+    service_list[category].forEach((obj) => {
+        $container.append(`<option value="${obj.id}">${obj.name}</option>`);
+    })
+    updateItem(service_list[category][0]['id']);
+}
+
+const requestService = (e) => {
+    e.preventDefault();
+
+    $("#new-request-form [type='submit']").html("読み込み中...").addClass("pointer-events-none opacity-50");
+
+    payload = {
+        item_id: $("#req-item-select").val(), 
+        remarks: $("#req-remarks").val(), 
+        quantity: $("#req-quantity").val(), 
+    };
+
+
+    $.ajax({
+        url: 'api/owner/requestService',
+        type: 'POST',
+        data: payload,
+        dataType: 'json',
+        success: function(response) {
+            if (response._code == '200') {
+                popupBox('success', "依頼が正常に送信されました", function () {
+                    $("#new-request-modal").addClass('hidden');
+                    getOwnerRequestList();
+                });
+            } else {
+                popupBox('error', "エラー: " + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            popupBox('error', "エラーが発生しました: " + xhr.status + " " + error);
+        }
+    });
+}
+
+const fetchRequest = (owner_request_list) => {
+    $container = $("#requests-list");
+    $container.find(".request-item").remove()
+    owner_request_list.forEach((obj) => {
+        switch (obj.status){
+            case '10_REQUEST':
+                status_icon = "hourglass_empty";
+                status = "申請中";
+                status_color = "amber"
+                break;
+            case '20_ASSIGNED':
+            case '30_COMPLETED':
+                status_icon = "sync ";
+                status = "処理中";
+                status_color = "blue";
+                break;
+            case '40_CONFIRMED':
+                status_icon = "check_circle_outline";
+                status = "完了";
+                status_color = "green";
+                break;
+        }
+
+        switch(obj.category){
+            case 'ゴミ': category_icon = "delete"; break;
+            case 'その他': category_icon = "note_alt"; break;
+            case 'ユーティリティ': category_icon = "electric_meter"; break;
+            case '内装': category_icon = "bedroom_child"; break;
+            case '実物販売': category_icon = "inventory_2"; break;
+            case '樹木': category_icon = "park"; break;
+            case '清掃・修理': category_icon = "cleaning_services"; break;
+            case '草刈り': category_icon = "grass"; break;
+            case '除雪': category_icon = "snowflake"; break;
+            case '駆除': category_icon = "bug_report"; break;
+            default: category_icon = "construction"; break;
+        }
+
+
+        $container.append(`
+            <div class="request-item p-5 flex flex-col md:flex-row justify-between gap-4 hover:bg-gray-50/50 transition-colors"
+                data-status="${status}">
+                <div class="flex items-start gap-4">
+                    <div class="p-2.5 bg-gray-100 rounded-xl text-gray-500 mt-0.5">
+                        <span class="material-icons text-[22px]">${category_icon}</span>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h4 class="font-bold text-gray-900 text-base">${obj.item}</h4>
+                            <span
+                                class="inline-flex px-2 py-0.5 rounded text-xs font-medium text-gray-600 bg-gray-100">${obj.category}</span>
+                        </div>
+                            <span class="font-mono text-xs text-gray-400">${obj.request_number}</span>
+                        <p class="text-xs text-gray-400 mt-2">申請日: ${moment(obj.request).format("YYYY-MM-DD HH:mm")}</p>
+                    </div>
+                </div>
+                <div
+                    class="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-3 md:text-right min-w-[120px]">
+                    <div class="font-bold text-gray-900 text-lg">${obj.price ? formatMoney(obj.price) : '未定'}</div>
+                    <span
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-${status_color}-50 text-${status_color}-700 border border-${status_color}-150">
+                        <span class="material-icons text-[14px]">${status_icon}</span>
+                        <span>${status}</span>
+                    </span>
+                </div>
+            </div>
+        `)
+        
+    })
+}
+        
+</script>

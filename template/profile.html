@@ -1,0 +1,242 @@
+<div class="mx-auto max-w-[1280px] px-4 md:px-6 py-8">
+    <!-- Header Title Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">プロフィール</h1>
+            <p class="text-sm text-gray-500 mt-1">オーナー情報の確認・編集ができます</p>
+        </div>
+        <div>
+            <button id="open-edit-modal-btn"
+                class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer">
+                <span class="material-icons text-[18px]">lock</span>
+                <span>パスワード変更</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="max-w-3xl mx-auto space-y-6">
+        <!-- Profile Header Card -->
+        <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex items-center gap-4">
+            <div class="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                <span class="material-icons text-[36px]">person</span>
+            </div>
+            <div>
+                <h2 id="display-header-name" class="text-xl font-bold text-gray-900">-</h2>
+                <p id="display-header-email" class="text-sm text-gray-500 mt-1 font-mono">-</p>
+            </div>
+        </div>
+
+        <!-- 連絡先情報 Card -->
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2 bg-gray-50/50">
+                <span class="material-icons text-gray-400 text-[20px]">mail</span>
+                <h3 class="font-bold text-gray-900 text-sm">連絡先情報</h3>
+            </div>
+            <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
+                <div>
+                    <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">氏名</span>
+                    <span id="display-name" class="text-gray-900 font-medium">-</span>
+                </div>
+                <div>
+                    <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">メールアドレス</span>
+                    <span id="display-email" class="text-gray-900 font-medium font-mono">-</span>
+                </div>
+                <div>
+                    <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">電話番号</span>
+                    <span id="display-phone" class="text-gray-900 font-medium font-mono">-</span>
+                </div>
+                <div>
+                    <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">FAX</span>
+                    <span id="display-fax" class="text-gray-900 font-medium font-mono">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 住所 Card -->
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2 bg-gray-50/50">
+                <span class="material-icons text-gray-400 text-[20px]">place</span>
+                <h3 class="font-bold text-gray-900 text-sm">住所</h3>
+            </div>
+            <div class="p-6 space-y-6 text-sm">
+                <div>
+                    <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">郵便番号</span>
+                    <span id="display-zip" class="text-gray-900 font-medium font-mono">-</span>
+                </div>
+                <div>
+                    <span class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">住所</span>
+                    <span id="display-address" class="text-gray-900 font-medium">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div id="edit-profile-modal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-xs">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden border border-gray-150">
+        <!-- Modal Header -->
+        <div class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-gray-900">パスワード変更</h3>
+            <button id="close-edit-modal-btn"
+                class="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-pointer">
+                <span class="material-icons text-[20px]">close</span>
+            </button>
+        </div>
+        <!-- Modal Form -->
+        <form id="edit-profile-form" class="p-6 space-y-4">
+            <div>
+                <label for="edit-old-password" class="block text-xs font-semibold text-gray-500 mb-1">現在のパスワード</label>
+                <input type="password" id="edit-old-password" required
+                    class="block w-full border border-gray-300 rounded-lg p-2 text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+            </div>
+            <div>
+                <label for="edit-new-password" class="block text-xs font-semibold text-gray-500 mb-1">新しいパスワード</label>
+                <input type="password" id="edit-new-password" required
+                    class="block w-full border border-gray-300 rounded-lg p-2 text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                    placeholder="8文字以上、英大小・数字含む">
+            </div>
+            <div>
+                <label for="edit-confirm-password"
+                    class="block text-xs font-semibold text-gray-500 mb-1">新しいパスワード（確認）</label>
+                <input type="password" id="edit-confirm-password" required
+                    class="block w-full border border-gray-300 rounded-lg p-2 text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                <button type="button" id="edit-cancel-btn"
+                    class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer">
+                    キャンセル
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer">
+                    変更する
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Dynamic Success Toast -->
+<div id="profile-toast"
+    class="hidden fixed bottom-5 right-5 z-50 flex items-center gap-2 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg font-medium transition-all duration-300 transform translate-y-2 opacity-0">
+    <span class="material-icons">check_circle</span>
+    <span>パスワードを変更しました。</span>
+</div>
+
+<script>
+    $(document).ready(function () {
+        fetchProfile();
+
+        // Modal Open/Close
+        $('#open-edit-modal-btn').click(function () {
+            $('#edit-old-password').val('');
+            $('#edit-new-password').val('');
+            $('#edit-confirm-password').val('');
+            $('#edit-profile-modal').removeClass('hidden');
+        });
+
+        function closeEditModal() {
+            $('#edit-profile-modal').addClass('hidden');
+        }
+
+        $('#close-edit-modal-btn, #edit-cancel-btn').click(closeEditModal);
+
+        $(document).keydown(function (e) {
+            if (e.keyCode === 27) {
+                closeEditModal();
+            }
+        });
+
+        $('#edit-profile-modal').click(function (e) {
+            if ($(e.target).is('#edit-profile-modal')) {
+                closeEditModal();
+            }
+        });
+
+        // Submit password change
+        $('#edit-profile-form').submit(function (e) {
+            e.preventDefault();
+
+            const oldPw = $('#edit-old-password').val();
+            const newPw = $('#edit-new-password').val();
+            const confirmPw = $('#edit-confirm-password').val();
+
+            // 1. Confirm password matching (client-side check first)
+            if (newPw !== confirmPw) {
+                popupBox('error', '新しいパスワードが一致しません。');
+                return;
+            }
+
+            // 2. Validate password strength: 8文字以上、英大小・数字含む
+            const hasUpper = /[A-Z]/.test(newPw);
+            const hasLower = /[a-z]/.test(newPw);
+            const hasDigit = /[0-9]/.test(newPw);
+
+            if (newPw.length < 8 || !hasUpper || !hasLower || !hasDigit) {
+                popupBox('error', 'パスワードは8文字以上で、大文字、小文字、数字をそれぞれ少なくとも1文字以上含む必要があります。');
+                return;
+            }
+
+            // 3. Perform backend password update call
+            $.ajax({
+                url: 'api/owner/update_password',
+                type: 'POST',
+                data: {
+                    old_password: oldPw,
+                    new_password: newPw
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response._code == '200') {
+                        closeEditModal();
+                        // Trigger success toast
+                        var $toast = $('#profile-toast');
+                        $toast.removeClass('hidden').css({ 'opacity': '1', 'transform': 'translateY(0)' });
+
+                        setTimeout(function () {
+                            $toast.css({ 'opacity': '0', 'transform': 'translateY(2px)' });
+                            setTimeout(function () {
+                                $toast.addClass('hidden');
+                            }, 300);
+                        }, 3000);
+                    } else {
+                        popupBox('error', response._msg || response.message || 'エラーが発生しました。');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    popupBox('error', 'エラーが発生しました: ' + xhr.status + ' ' + error);
+                }
+            });
+        });
+    });
+
+    const fetchProfile = () => {
+        $.ajax({
+            url: 'api/owner/getProfile',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response._code == '200') {
+                    const owner = response.owner || {};
+                    $('#display-header-name').text(owner.name || '-');
+                    $('#display-header-email').text(owner.email || '-');
+                    $('#display-name').text(owner.name || '-');
+                    $('#display-email').text(owner.email || '-');
+                    $('#display-phone').text(owner.phone || '-');
+                    $('#display-fax').text(owner.fax || '-');
+                    $('#display-zip').text(owner.zip_code || '-');
+                    $('#display-address').text(owner.address || '-');
+                } else {
+                    popupBox('error', 'プロフィール情報の取得に失敗しました: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                popupBox('error', '通信エラーが発生しました: ' + xhr.status + ' ' + error);
+            }
+        });
+    };
+</script>

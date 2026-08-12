@@ -1,0 +1,301 @@
+<div class="mx-auto max-w-[1280px] px-4 md:px-6 py-8">
+    <!-- Welcome Banner Section -->
+    <div
+        class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 md:p-8 text-white shadow-md mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight">こんにちは、<span id="welcome-name">オーナー</span> 様</h1>
+            <p class="text-blue-100 mt-2 text-sm md:text-base">オーナー管理ポータルへようこそ。直近の請求や依頼状況を確認できます。</p>
+        </div>
+        <div class="flex gap-3">
+            <a href="service-requests"
+                class="px-4 py-2.5 bg-white text-blue-600 hover:bg-blue-50 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm flex items-center gap-2">
+                <span class="material-icons text-[18px]">handyman</span>
+                <span>サービス依頼</span>
+            </a>
+            <a href="management-fees"
+                class="px-4 py-2.5 bg-blue-700/50 hover:bg-blue-700/70 border border-blue-400/30 text-white rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm flex items-center gap-2">
+                <span class="material-icons text-[18px]">receipt_long</span>
+                <span>支払い管理</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Grid Content Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Left Side: Main Dashboard Sections (2 Cols) -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- 1. Service Request Status Card -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-2">
+                        <span class="material-icons text-blue-500">handyman</span>
+                        <h2 class="text-lg font-bold text-gray-900">サービス依頼の状況</h2>
+                    </div>
+                    <a href="service-requests" class="text-sm text-blue-600 hover:text-blue-700 font-medium">すべて見る
+                        &rarr;</a>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="bg-amber-50/50 border border-amber-100 rounded-xl p-4 text-center">
+                        <div class="text-2xl font-extrabold text-amber-600" id="count-request">0</div>
+                        <div class="text-xs text-amber-700 font-medium mt-1">申請中</div>
+                    </div>
+                    <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 text-center">
+                        <div class="text-2xl font-extrabold text-blue-600" id="count-process">0</div>
+                        <div class="text-xs text-blue-700 font-medium mt-1">処理中</div>
+                    </div>
+                    <div class="bg-green-50/50 border border-green-100 rounded-xl p-4 text-center">
+                        <div class="text-2xl font-extrabold text-green-600" id="count-completed">0</div>
+                        <div class="text-xs text-green-700 font-medium mt-1">完了</div>
+                    </div>
+                </div>
+
+                <!-- Recent Request Table -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm text-left text-gray-700">
+                        <thead>
+                            <tr
+                                class="text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100 pb-2">
+                                <th class="py-2.5">依頼ID</th>
+                                <th class="py-2.5">内容</th>
+                                <th class="py-2.5">ステータス</th>
+                                <th class="py-2.5 text-right">日付</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-requests-body" class="divide-y divide-gray-50">
+                            <!-- Dynamic rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2. Recent Announcements Card -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-2">
+                        <span class="material-icons text-blue-500">notifications</span>
+                        <h2 class="text-lg font-bold text-gray-900">最近のお知らせ</h2>
+                    </div>
+                    <a href="notice-board" class="text-sm text-blue-600 hover:text-blue-700 font-medium">すべて見る
+                        &rarr;</a>
+                </div>
+
+                <div class="space-y-4" id="recent-notices-container">
+                    <!-- Dynamic notices will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Sidebar Dashboard Sections (1 Col) -->
+        <div class="space-y-8">
+            <!-- 1. Payment Status Card -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider">未払い合計金額</h2>
+                        <span class="material-icons text-red-500">account_balance_wallet</span>
+                    </div>
+                    <div class="text-3xl font-extrabold text-red-600 mb-2" id="unpaid-total">¥0</div>
+                    <p class="text-xs text-gray-400">現在お支払い手続きが必要な未払い総額です</p>
+                </div>
+                <div class="mt-6 border-t border-gray-100 pt-4">
+                    <a href="management-fees"
+                        class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-sm font-semibold transition-colors duration-200 shadow-sm">
+                        支払い明細を確認する
+                    </a>
+                </div>
+            </div>
+
+            <!-- 2. Quick Actions Menu -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                <h3 class="text-sm font-bold text-gray-800 mb-4">クイックリンク</h3>
+                <div class="grid grid-cols-1 gap-3">
+                    <a href="profile"
+                        class="flex items-center justify-between p-3.5 rounded-xl border border-gray-100 hover:bg-gray-50 transition-all duration-200">
+                        <div class="flex items-center gap-3">
+                            <span
+                                class="material-icons text-blue-500 bg-blue-50 p-2 rounded-lg text-[20px]">person</span>
+                            <span class="text-sm font-medium text-gray-700">プロフィール確認</span>
+                        </div>
+                        <span class="material-icons text-gray-400 text-[18px]">chevron_right</span>
+                    </a>
+                    <a href="notice-board"
+                        class="flex items-center justify-between p-3.5 rounded-xl border border-gray-100 hover:bg-gray-50 transition-all duration-200">
+                        <div class="flex items-center gap-3">
+                            <span
+                                class="material-icons text-purple-500 bg-purple-50 p-2 rounded-lg text-[20px]">campaign</span>
+                            <span class="text-sm font-medium text-gray-700">掲示板を見る</span>
+                        </div>
+                        <span class="material-icons text-gray-400 text-[18px]">chevron_right</span>
+                    </a>
+                    <a href="service-requests"
+                        class="flex items-center justify-between p-3.5 rounded-xl border border-gray-100 hover:bg-gray-50 transition-all duration-200">
+                        <div class="flex items-center gap-3">
+                            <span
+                                class="material-icons text-emerald-500 bg-emerald-50 p-2 rounded-lg text-[20px]">rate_review</span>
+                            <span class="text-sm font-medium text-gray-700">サービス新規依頼</span>
+                        </div>
+                        <span class="material-icons text-gray-400 text-[18px]">chevron_right</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        init();
+    });
+
+    const init = () => {
+        fetchProfile();
+        fetchRequests();
+        fetchAnnouncements();
+        fetchPaymentSummary();
+    };
+
+    // 1. Fetch Profile info for name greeting
+    const fetchProfile = () => {
+        $.ajax({
+            url: 'api/owner/getProfile',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                if (response._code == '200') {
+                    const owner = response.owner || {};
+                    if (owner.name) {
+                        $('#welcome-name').text(owner.name);
+                    }
+                }
+            }
+        });
+    };
+
+    // 2. Fetch service requests list & count
+    const fetchRequests = () => {
+        $.ajax({
+            url: 'api/owner/getOwnerRequestList',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                if (response._code == '200') {
+                    // Update stats counters
+                    if (response.count) {
+                        $('#count-request').text(response.count.request || 0);
+                        $('#count-process').text(response.count.process || 0);
+                        $('#count-completed').text(response.count.completed || 0);
+                    }
+
+                    // Render recent top 3 requests
+                    const list = response.request_list || [];
+                    const $body = $('#recent-requests-body');
+                    $body.empty();
+
+                    if (list.length === 0) {
+                        $body.html('<tr><td colspan="4" class="py-8 text-center text-gray-400 text-sm">直近のサービス依頼はありません</td></tr>');
+                    } else {
+                        const top3 = list.slice(0, 3);
+                        top3.forEach(req => {
+                            let statusText = "申請中";
+                            let statusColor = "bg-amber-50 text-amber-700 border-amber-100";
+
+                            switch (req.status) {
+                                case '10_REQUEST':
+                                    statusText = "申請中";
+                                    statusColor = "bg-amber-50 text-amber-700 border-amber-100";
+                                    break;
+                                case '20_ASSIGNED':
+                                case '30_COMPLETED':
+                                    statusText = "処理中";
+                                    statusColor = "bg-blue-50 text-blue-700 border-blue-100";
+                                    break;
+                                case '40_CONFIRMED':
+                                    statusText = "完了";
+                                    statusColor = "bg-green-50 text-green-700 border-green-100";
+                                    break;
+                            }
+
+                            $body.append(`
+                                <tr>
+                                    <td class="py-3.5 font-mono text-xs text-gray-500">${req.request_number}</td>
+                                    <td class="py-3.5 font-medium text-gray-900">${req.item || 'サービス依頼'}</td>
+                                    <td class="py-3.5">
+                                        <span class="inline-flex px-2 py-0.5 rounded text-xs font-semibold border ${statusColor}">${statusText}</span>
+                                    </td>
+                                    <td class="py-3.5 text-right text-gray-400 font-mono text-xs">${moment(req.request_date).format("YYYY-MM-DD")}</td>
+                                </tr>
+                            `);
+                        });
+                    }
+                }
+            }
+        });
+    };
+
+    // 3. Fetch announcements (notices)
+    const fetchAnnouncements = () => {
+        $.ajax({
+            url: 'api/owner/getNewsList',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                if (response._code == '200') {
+                    const list = response.news_list || [];
+                    const $container = $('#recent-notices-container');
+                    $container.empty();
+
+                    if (list.length === 0) {
+                        $container.html('<div class="text-sm text-gray-400 py-4 text-center">現在お知らせはありません</div>');
+                    } else {
+                        const top3 = list.slice(0, 3);
+                        top3.forEach(news => {
+                            let catName = news.category || "お知らせ";
+                            let catClass = "bg-blue-50 text-blue-700 border-blue-100";
+
+                            if (news.is_important == 1 || catName.includes("重要")) {
+                                catName = "重要";
+                                catClass = "bg-rose-50 text-rose-700 border-rose-100 animate-pulse font-semibold";
+                            } else if (catName === "イベント") {
+                                catClass = "bg-purple-50 text-purple-700 border-purple-100";
+                            }
+
+                            const rawDate = news.release_date || news.created_at || "";
+                            const displayDate = rawDate.split(" ")[0] || rawDate;
+
+                            $container.append(`
+                                <a href="notice-board" class="block p-4 rounded-xl border border-gray-100 hover:bg-gray-50 transition-all duration-200">
+                                    <div class="flex items-center gap-2.5 mb-1.5 flex-wrap">
+                                        <span class="px-2 py-0.5 rounded text-xs font-semibold border ${catClass}">${catName}</span>
+                                        <span class="text-xs text-gray-400 font-mono">${displayDate}</span>
+                                    </div>
+                                    <h4 class="font-bold text-gray-900 text-sm line-clamp-1">${news.title || "無題"}</h4>
+                                    <p class="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">${news.content || ""}</p>
+                                </a>
+                            `);
+                        });
+                    }
+                }
+            }
+        });
+    };
+
+    // 4. Fetch payment summary
+    const fetchPaymentSummary = () => {
+        $.ajax({
+            url: 'api/owner/getManagementFeeSummary',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                if (response._code == '200') {
+                    if (response.unpaid !== undefined) {
+                        $('#unpaid-total').text(formatMoney(response.unpaid));
+                    }
+                }
+            }
+        });
+    };
+</script>

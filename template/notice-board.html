@@ -1,0 +1,151 @@
+<div class="mx-auto max-w-[1280px] px-4 md:px-6 py-8">
+    <!-- Header Title Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">お知らせ</h1>
+            <p class="text-sm text-gray-500 mt-1">管理会社からの連絡や重要なお知らせをご確認いただけます</p>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="flex border-b border-gray-200 mb-6 gap-2">
+        <button data-filter="all" class="px-4 py-2 text-sm font-medium border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-all duration-200">
+            すべて
+        </button>
+        <button data-filter="掲示板" class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none transition-all duration-200">
+            掲示板
+        </button>
+        <button data-filter="イベント" class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none transition-all duration-200">
+            イベント
+        </button>
+    </div>
+
+    <!-- News List Container -->
+    <div class="space-y-4" id="news-list-container">
+        <!-- Announcements will be generated dynamically here -->
+    </div>
+</div>
+
+<script>
+    let rawNewsList = [];
+
+    $(document).ready(function() {
+        init();
+        listener();
+    });
+
+    const init = () => {
+        getNewsList();
+    }
+
+    const getNewsList = () => {
+        $.ajax({
+            url: 'api/owner/getNewsList',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response._code == '200') {
+                    rawNewsList = response.news_list || [];
+                    renderNewsList(rawNewsList);
+                } else {
+                    popupBox('error', "エラー: " + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                popupBox('error', "エラーが発生しました: " + xhr.status + " " + error);
+            }
+        });
+    }
+
+    const renderNewsList = (newsList) => {
+        const $container = $("#news-list-container");
+        $container.empty();
+
+        if (newsList.length === 0) {
+            $container.html(`
+                <div class="bg-white border border-gray-200 rounded-xl p-12 text-center shadow-sm">
+                    <span class="material-icons text-gray-300 text-6xl mb-4">notifications_off</span>
+                    <h3 class="text-gray-500 font-medium text-lg">現在お知らせはありません</h3>
+                    <p class="text-gray-400 text-sm mt-1">新しいお知らせが届くまでお待ちください</p>
+                </div>
+            `);
+            return;
+        }
+
+        newsList.forEach(news => {
+            // Determine category name and badge styling
+            let catName = news.category || "お知らせ";
+            let catClass = "bg-blue-50 text-blue-700 border border-blue-100"; // default: general notice
+
+            if (news.is_important == 1 || catName.includes("重要") || catName.toLowerCase() === "important") {
+                catName = "重要";
+                catClass = "bg-rose-50 text-rose-700 font-semibold border border-rose-100 animate-pulse";
+            } else if (catName === "イベント") {
+                catClass = "bg-purple-50 text-purple-700 border border-purple-100";
+            } else if (catName === "掲示板") {
+                catClass = "bg-blue-50 text-blue-700 border border-blue-100";
+            }
+
+            const rawDate = news.release_date || news.created_at || news.date || "";
+            const displayDate = rawDate.split(" ")[0] || rawDate;
+
+            const contentHtml = (news.content || "").replace(/\n/g, "<br>");
+
+            const itemHtml = `
+                <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer" data-news-id="${news.id}">
+                    <div class="flex items-start justify-between gap-4 flex-wrap sm:flex-nowrap">
+                        <div class="space-y-2 w-full">
+                            <div class="flex items-center gap-3 flex-wrap">
+                                <span class="px-2.5 py-0.5 rounded text-xs font-medium ${catClass}">${catName}</span>
+                                <span class="text-xs text-gray-400 font-mono">${displayDate}</span>
+                            </div>
+                            <h3 class="text-base font-bold text-gray-900">${news.title || "無題"}</h3>
+                            <div class="text-sm text-gray-600 mt-2 font-normal leading-relaxed line-clamp-3" data-news-content>
+                                ${contentHtml}
+                            </div>
+                        </div>
+                        <div class="flex items-center self-center">
+                            <span class="material-icons text-gray-400 hover:text-gray-600 transition-colors" data-expand-icon>expand_more</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            $container.append(itemHtml);
+        });
+    }
+
+    const listener = () => {
+        // Expand / Collapse announcement content
+        $(document).on("click", "[data-news-id]", function(e) {
+            // If clicking a link or something else, ignore
+            if ($(e.target).is("a") || $(e.target).closest("a").length) return;
+
+            const $content = $(this).find("[data-news-content]");
+            const $icon = $(this).find("[data-expand-icon]");
+
+            if ($content.hasClass("line-clamp-3")) {
+                $content.removeClass("line-clamp-3");
+                $icon.text("expand_less");
+            } else {
+                $content.addClass("line-clamp-3");
+                $icon.text("expand_more");
+            }
+        });
+
+        // Filter tabs
+        $(document).on("click", "[data-filter]", function() {
+            const filter = $(this).data("filter");
+
+            // Update active state class of buttons
+            $("[data-filter]").removeClass("border-blue-600 text-blue-600").addClass("border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300");
+            $(this).addClass("border-blue-600 text-blue-600").removeClass("border-transparent text-gray-500");
+
+            if (filter === "all") {
+                renderNewsList(rawNewsList);
+            } else {
+                const filtered = rawNewsList.filter(n => n.category === filter);
+                renderNewsList(filtered);
+            }
+        });
+    }
+</script>
