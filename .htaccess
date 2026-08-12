@@ -7,6 +7,18 @@
 
 RewriteEngine on
 
+# Prevent directory browsing
+Options -Indexes
+
+# Block direct access to sensitive directories (include, class, template) entirely
+RewriteCond %{ENV:REDIRECT_STATUS} ^$
+RewriteRule ^(include|class|template)\b - [F,L]
+
+# Prevent direct access to physical files (like api.php or files inside api/), but allow internal redirects
+RewriteCond %{ENV:REDIRECT_STATUS} ^$
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [F,L]
+
 # api
 RewriteRule ^js/(.*\.js)$ template/js/$1 [L]
 RewriteRule ^api/([^/]+)/([^/]+)/?$ api.php?mode=$1&submode=$2 [L,QSA]

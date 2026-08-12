@@ -80,7 +80,7 @@ if ($_REQUEST['email'] && $_REQUEST['password']) {
                 <span class="material-icons text-[32px]">apartment</span>
             </div>
             <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
-                Owner Portal
+                オーナーポータル
             </h1>
             <p class="text-gray-400 text-sm mt-2">オーナー専用ポータルへログイン</p>
         </div>
